@@ -27,3 +27,6 @@ dta<-read.table(here("stores","US90.txt"), sep="", header=TRUE)
 # plot data ---------------------------------------------------------------
 
 plot(dta$gdpgr, dta$gdpcapgr, pch="*")
+
+# la regresión ---------------------------------------------------------------
+
