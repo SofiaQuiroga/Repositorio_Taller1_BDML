@@ -63,3 +63,8 @@ Link10<-read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/gei
 Tabla10<-html_table(Link10)
 Tabla10<-as.data.frame(Tabla10)
 BaseA<-merge(BaseA,Tabla10, all = TRUE)
+
+##Limpiar la Base
+BaseB<-BaseA[BaseA$age>=18, ] #Base con personas mayores a 18 años
+#variables principales
+BaseC<-select(BaseB,age,clase,college,hoursWorkUsual,informal,p6090,sex,totalHoursWorked,y_salary_m,y_salary_m_hu)
