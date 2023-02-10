@@ -24,3 +24,24 @@ ggplot(data = nuevos_datos , mapping = aes(x = edad , y = log_salario))
 
 
 ggplot(nuevos_datos, aes(edad, log_salario)) + geom_point(colour = "red")
+
+
+errores_estandar<-function(nuevos_datos,index ){
+  
+  #get the coefficients
+  coeficientes<-lm(log_salarios~edad+edad_2, nuevos_datos, subset = index)$coefficients
+  
+  #put the coefficients in scalars  
+  b0<-coefs[1]
+  b1<-coefs[2] 
+  b2<-coefs[3] 
+  
+  #calculando la predicción de age-earningg
+  age_earnings<-b1+b2*edad+b3*edad_2
+  
+  #return estimated earnings
+  return(earnings_estimated)
+}
+
+results <- boot(nuevos_datos, errores_estandar,R=1000)
+results
