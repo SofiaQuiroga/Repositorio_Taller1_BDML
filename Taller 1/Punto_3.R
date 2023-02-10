@@ -1,7 +1,6 @@
-##Punto 8 
 
 ##Punto 3
-###Genero la variable independiente ----------------------------
+###Genero las variables de la regresión ----------------------------
 
 datos<- datos %>% mutate(age_2=age^2, 
                          log_income=log(ingtot) )
