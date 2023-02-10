@@ -15,7 +15,10 @@ nuevos_datos[is.na(nuevos_datos) | nuevos_datos == "Inf"] <- NA
 nuevos_datos[is.na(nuevos_datos) | nuevos_datos=="-Inf"]= NA
 
 mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
+y_predict <- predict(mod1, nuevos_datos)
 stargazer(mod1,type="text")
+
+ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line() + theme_bw()
 
 
 #Gráfica de la relación age-earnings
