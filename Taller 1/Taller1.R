@@ -85,9 +85,9 @@ BaseC<-select(BaseB,age,clase,college,hoursWorkUsual,informal,p6090,sex,totalHou
 
 #SOFÍA 
 #Limpieza base de datos
-datos <- select(BaseA, sex, estrato1, age, p6210s1, p6426, p6090, depto, ingtot, clase)
+datos <- select(BaseA, directorio, sex, estrato1, age, p6210, p6426, p6090, depto, ingtot, clase, ocu)
 datos <- na.omit(datos)
-datos <- datos %>% filter(age>17)
+datos <- datos %>% filter(age>17, ocu==1)
 summary(datos)
 
 
