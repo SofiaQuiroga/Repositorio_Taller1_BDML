@@ -4,6 +4,9 @@
 ###Paquetes a instalar
 p_load("boot")
 
+#Fijamos una semilla para el bootstrap 
+set.seeed(123)
+
 ###Genero las variables de la regresión ----------------------------
 
 
@@ -25,7 +28,9 @@ y_predict <- predict(mod1, nuevos_datos)
 stargazer(mod1,type="text")
 
 #Gráfica de la relación predicha entre edad y ganancias (en logaritmo).
-ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line() + theme_bw()
+ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line(color = "blue") + theme_bw() + 
+  labs(x ="Edad (años)", y = "Logaritmo del salario (predicho)", 
+  title= "Gráfico 1. Perfil estimado para la relación edad-ganancias")
 
 
 #Estimacion en niveles 
@@ -34,6 +39,8 @@ salario_predicho <- predict(mod2, nuevos_datos)
 stargazer(mod2,type="text")
 ggplot(datos, aes(x = edad, y=salario_predicho)) + geom_line() + theme_bw()
 
+#Necesitamos los coeficientes
+mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
 
 coefs<-mod1$coef
 coefs
@@ -143,3 +150,59 @@ mod2_fn <- function(data, index,
 results <- boot(nuevos_datos, mod2_fn, R=1000)
 results
 
+
+
+
+
+
+
+coefs<-lm(log_salario~edad+edad_2, data = nuevos_datos)$coefficients
+b0<-coefs[1]
+b1<-coefs[2] 
+b2<-coefs[3] 
+
+maximizar <- function(edad) {b0 + b1*edad + b2*(edad^2)}
+maximo <- optimize(maximizar, interval = c(18,93), maximum=T)
+edad_maxima <- as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])
+
+mod2_fn <- function(data, index, 
+                    edad_maxima = as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])) {
+  
+  coefs <- lm(log_salario~edad+edad_2, data = nuevos_datos, subset = index)$coefficients
+  
+  b0<-coefs[1]
+  b1<-coefs[2] 
+  b2<-coefs[3]
+  
+  age_earnings <- b1 + 2*b2*(edad_maxima)
+  
+  return(age_earnings)
+}
+
+results <- boot(nuevos_datos, mod2_fn, R=1000)
+results
+
+
+##Otra idea 
+
+#Note que la edad máxima se encuentra con la siguiente fórmula:
+edad_optima <- -b1/(2*b2)
+  
+  peak_age<-function(data,index){
+    
+    #obtenemos los coeficientes
+    coefs<-lm(log_salario~edad+edad_2,nuevos_datos, subset = index)$coefficients
+    
+    #guerdamos los coeficientes  
+    b1<-coefs[2]
+    b2<-coefs[3] 
+    b4<-coefs[5] 
+    
+    #calculamos la edad que maximiza el ingreso
+    edad_optima <- -b1/(2*b2)
+    
+    return(edad_optima)
+  }
+
+  results <- boot(nuevos_datos, peak_age,R=1000)
+  results
