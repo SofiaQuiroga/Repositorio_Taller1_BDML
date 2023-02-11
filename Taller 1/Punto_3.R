@@ -14,19 +14,20 @@ nuevos_datos[is.na(nuevos_datos) | nuevos_datos == "Inf"] <- NA
 
 nuevos_datos[is.na(nuevos_datos) | nuevos_datos=="-Inf"]= NA
 
+#Estimación log-lin
 mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
 y_predict <- predict(mod1, nuevos_datos)
 stargazer(mod1,type="text")
 
+#Gráfica de la relación predicha entre edad y ganancias (en logaritmo).
 ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line() + theme_bw()
 
 
-#Gráfica de la relación age-earnings
-
-ggplot(data = nuevos_datos , mapping = aes(x = edad , y = log_salario))
-
-
-ggplot(nuevos_datos, aes(edad, log_salario)) + geom_point(colour = "red")
+#Estimacion en niveles 
+mod2<-lm(salario~edad+edad_2, data = nuevos_datos)
+salario_predicho <- predict(mod2, nuevos_datos)
+stargazer(mod2,type="text")
+ggplot(datos, aes(x = edad, y=salario_predicho)) + geom_line() + theme_bw()
 
 
 errores_estandar<-function(nuevos_datos,index ){
