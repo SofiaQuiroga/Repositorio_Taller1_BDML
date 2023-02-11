@@ -76,7 +76,18 @@ for (i in 1:11459) {
   cv.error1[i] <- cv.glm(nuevos_datos, glm.fit)$delta[1]
 }
 
-mean(unlist(cv.error1))
+loocv1 <- mean(unlist(cv.error1))
+
+ctrl1 <- trainControl(method = "LOOCV")
+
+model_loocv1 <- train(log_salario ~ edad + edad_2 + poly(tiempoTrabajo,2,raw=TRUE) + 
+                        I(edad*tiempoTrabajo) + I(edad*(tiempoTrabajo^2)) +
+                        poly(maxEducativo,2,raw=TRUE) + 
+                        I(edad*maxEducativo) + I(edad*(maxEducativo^2)) + 
+                        sex + I(edad*sex) + factor(estrato), data = nuevos_datos, method = "lm", trControl = ctrl1)
+
+model_loocv1
+
 
 # LOOCV Segundo Modelo
 set.seed(3312)
@@ -93,5 +104,15 @@ for (i in 1:11459) {
   cv.error2[i] <- cv.glm(nuevos_datos, glm.fit)$delta[1]
 }
 
-mean(unlist(cv.error2))
+loocv2 <- mean(unlist(cv.error2))
+
+ctrl2 <- trainControl(method = "LOOCV")
+
+model_loocv2 <- train(log_salario ~ sex + poly(tiempoTrabajo,2,raw=TRUE) + 
+                        I(sex*tiempoTrabajo) + I(sex*(tiempoTrabajo^2)) +
+                        poly(maxEducativo,2,raw=TRUE) + 
+                        I(sex*maxEducativo) + I(sex*(maxEducativo^2)) + 
+                        edad + + edad_2 + I(edad_2*sex) + factor(estrato), data = nuevos_datos, method = "lm", trControl = ctrl2)
+
+model_loocv2
 
