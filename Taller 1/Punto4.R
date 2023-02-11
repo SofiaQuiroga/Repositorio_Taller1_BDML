@@ -87,11 +87,14 @@ wp_modelo2_fn<-function(data,index,
   wage_gap<- b1*wage_bar
   
   
-  #return the elasticty of demand
+  #return el gender wage gap condicionado
   return(wage_gap)
 }
 wp_modelo2_fn(datos,1:nrow(datos))
 
 results<- boot(datos, wp_modelo2_fn,R=1000)
 results
+##error estándar  bootstrap:0.081073   FWL:0.8084172
+
+#Predicted age-wage profiles 
 
