@@ -22,6 +22,7 @@ reg1<- lm(logw ~ female , data=datos)
 ### maxEducativo, TiempoTrabajo, estrato, edad, edad^2
 
 datos$agesq<- (datos$edad)^2
+
 reg2<- lm(logw ~ female + maxEducativo + tiempoTrabajo +estrato + edad+ agesq , data=datos)
 #Step 1: regresamos las variables de X1= {maxEducativo, tiempoTrabajo, estrato, edad, edad^2} en X2= {female} para obtener los residuals
 datos<-datos %>% mutate(maxEducResidF=lm(maxEducativo~female,datos)$residuals)
@@ -29,16 +30,19 @@ datos<-datos %>% mutate(tiempoTrabajoResidF=lm(tiempoTrabajo~female,datos)$resid
 datos<-datos %>% mutate(estratoResidF=lm(estrato~female,datos)$residuals)
 datos<-datos %>% mutate(edadResidF=lm(edad~female,datos)$residuals)
 datos<-datos %>% mutate(agesqResidF=lm(agesq~female,datos)$residuals)
+
 #Step 2: regresamos el logaritmo del salario en X2 para obtener los residuals
 datos<-datos %>% mutate(logwResidF=lm(logw~female,datos)$residuals)
 
-#Step 3: regresamos los residuos del primer paso en los residuos del segundo paso
+#Step 3: regresamos los residuos del segundo paso en los residuos del primer paso
 reg3<-lm(logwResidF~maxEducResidF+tiempoTrabajoResidF+estratoResidF+edadResidF+agesqResidF,datos)
-stargazer(reg1,reg2,reg3,type="text",digits=7)
 
+##comparamos los coeficientes
+stargazer(reg1,reg2,reg3,type="text",digits=7)
 #SSR
-sum(resid(reg2)^2)
-sum(resid(reg3)^2)
+sum(resid(reg2)^2) ##10806.26
+sum(resid(reg3)^2) ##10806.26
+##verificamos que los SSR son iguales
 
 #Prueba FWL
 r1<-lm(logw~female, datos)
@@ -49,14 +53,18 @@ stargazer(r2,r3,type="text",digits=7)
 
 
 #Bootstrap con FWL
+
+#cargamos el paquete boot para hacer el bootstrap
 p_load(boot)
+
 #wage gap sin controles
 modelo1<-lm(logw~female,datos)
 #wage gap condicionado - el mismo modelo que usamos con FWL 
 modelo2 <-lm(logw~female+maxEducativo + tiempoTrabajo +estrato + edad+ agesq, datos)
-stargazer(modelo1,modelo2,type="text")
+stargazer(modelo1,modelo2,type="text", digits=7)
 #coeficiente de la variable female cambia cuando se incluyen los controles
 
+#guardamos los coeficientes en un vector
 coefs<- modelo2$coef
 coefs
 #Coeficientes a escalares
@@ -97,4 +105,71 @@ results
 ##error estándar  bootstrap:0.081073   FWL:0.8084172
 
 #Predicted age-wage profiles 
+
+#Intervalos de confianza
+##sexo femenino
+IC_inff <- b1*wage_bar - (1.96*0.081073 )
+IC_supf <- b1*wage_bar + (1.96*0.081073 )
+IC_inff
+IC_supf
+
+#sexo masculino
+IC_infm <- -b1*wage_bar - (1.96*0.081073 )
+IC_supm <- -b1*wage_bar + (1.96*0.081073 )
+IC_infm
+IC_supm
+
+#Predicciones
+#peak ages
+#femenino
+peak_agef<- -b5/(2*b6)
+peak_agef
+#43.20267 
+
+#masculino
+modelo4 <-lm(salario~sex+ edad+I(edad^2), datos)
+coefsm<- modelo4$coefficients
+b5m<- coefsm[6]
+b6m<- coefsm[7]
+peak_agem<- -b5m/(2*b6m)
+peak_agem
+#53.70463
+
+#Modelo sin interacción entre sexo y edad
+modelop <-lm(salario~ female+ edad +I(edad^2), datos)
+
+##Femenino
+x_fem <- data.frame(female=1,edad=1:100)
+pred_fem<- predict(modelop, newdata=x_fem)
+base_f <- data.frame(salario_predicho= pred_fem, x_fem)
+##Masculino 
+x_masc<-data.frame(female=0,edad=1:100)
+pred_masc<- predict(modelop, newdata=x_masc)
+base_m <- data.frame(salario_predicho= pred_masc, x_masc)
+
+base <- rbind(base_f, base_m)
+#Gráfico
+
+ggplot(base, aes(x=edad, y=salario_predicho, color=as.factor(female) ) ) + geom_line() + theme_bw() +labs(x ="Edad (años)", y = "Salario (predicho)", 
+                                                                                                          title= "Edad-salario por sexo sin interacción") 
+       
+#Modelo con interacción entre sexo y edad
+modelop1 <-lm(salario~ female*edad +I(edad^2), datos)
+
+##Femenino
+x_fem <- data.frame(female=1,edad=1:100)
+pred_fem<- predict(modelop1, newdata=x_fem)
+base_f1 <- data.frame(salario_predicho= pred_fem, x_fem)
+##Masculino 
+x_masc<-data.frame(female=0,edad=1:100)
+pred_masc<- predict(modelop1, newdata=x_masc)
+base_m1 <- data.frame(salario_predicho= pred_masc, x_masc)
+
+base1 <- rbind(base_f, base_m)
+#Gráfico
+
+ggplot(base1, aes(x=edad, y=salario_predicho, color=as.factor(female) ) ) + geom_line() + theme_bw() +labs(x ="Edad (años)", y = "Salario (predicho)", 
+                                                                                                          title= "Edad-salario por sexo sin interacción") 
+
+
 
