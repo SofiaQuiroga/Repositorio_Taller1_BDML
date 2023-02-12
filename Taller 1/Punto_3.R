@@ -5,7 +5,7 @@
 p_load("boot")
 
 #Fijamos una semilla para el bootstrap 
-set.seeed(123)
+set.seed(123)
 
 ###Genero las variables de la regresión ----------------------------
 
@@ -37,7 +37,8 @@ ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line(color = "blue") + t
 mod2<-lm(salario~edad+edad_2, data = nuevos_datos)
 salario_predicho <- predict(mod2, nuevos_datos)
 stargazer(mod2,type="text")
-ggplot(datos, aes(x = edad, y=salario_predicho)) + geom_line() + theme_bw()
+ggplot(nuevos_datos, aes(x = edad, y=salario_predicho)) + geom_line(color = "blue") + theme_bw()
+  
 
 #Necesitamos los coeficientes
 mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
@@ -50,140 +51,7 @@ coefs
 
 b0<-coefs[1]
 b1<-coefs[2] 
-b2<-coefs[3] 
-
-edad_optima <- -b1/(2*b2)
-
-
-#De forma automatizada 
-
-result  <- with(nuevos_datos,nuevos_datos[y_predict==max(y_predict),])
-result
-
-errores_estandar<-function(nuevos_datos,index ){
-  
-  #get the coefficients
-  coeficientes<-lm(log_salario~edad+edad_2, nuevos_datos, subset = index)$coefficients
-  
-  
-  #put the coefficients in scalars  
-  b0<-coefs[1]
-  b1<-coefs[2] 
-  b2<-coefs[3] 
-  
-  #calculando la predicción de age-earningg
-  age_earnings<-b1+b2*edad+b3*edad_2
-  
-  #return estimated earnings
-  return(earnings_estimated)
-}
-
-results <- boot(nuevos_datos, errores_estandar,R=1000)
-results
-
-
-##Nuevo intento: tratando de encintrar la función a maximoxar 
-
-f<- function (edad) (edad + I(edad)^2)
-  
-derivada <- lm(0~b1+2*b2*edad)
-
-#Mi función
-mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
-
-age_bar <- mean(nuevos_datos$edad)
-age_max <- (-b1/(2*b2))
-age_max
-
-boot_age_max <- boot(nuevos_datos, age_max,R=100)
-
-#Donde edad y edad_2 toman los valores: 
-#edad:  b1 ; edad_2:b2
-
-
-
-eta_mod2_fn<-function(nuevos_datos,index){
-  
-  #get the coefficients
-  coefs<-lm(log_salario~edad+edad_2, data = nuevos_datos, subset = index)$coefficients
-  
-  #put the coefficients in scalars  
-  b1<-coefs[1]
-  b2<-coefs[2] 
-  
-  #calculate the elasticity of demand
-  age_max <- (-b1/(2*b2))
-  
-  #return the elasticty of demand
-  return(age_max)
-}
-
-results <- boot(nuevos_datos,eta_mod2_fn,R=1000)
-results
-
-
-
-
-coefs<-lm(log_salario~edad+edad_2, data = nuevos_datos)$coefficients
-b0<-coefs[1]
-b1<-coefs[2] 
-b2<-coefs[3] 
-
-maximizar <- function(edad) {b0 + b1*edad + b2*(edad^2)}
-maximo <- optimize(maximizar, interval = c(18,93), maximum=T)
-edad_maxima <- as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])
-
-mod2_fn <- function(data, index, 
-                    edad_maxima = as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])) {
-  
-  coefs <- lm(log_salario~edad+edad_2, data = nuevos_datos, subset = index)$coefficients
-  
-  b0<-coefs[1]
-  b1<-coefs[2] 
-  b2<-coefs[3]
-  
-  age_earnings <- b0 + b1*edad_maxima + b2*(edad_maxima^2)
-  
-  return(age_earnings)
-}
-
-results <- boot(nuevos_datos, mod2_fn, R=1000)
-results
-
-
-
-
-
-
-
-coefs<-lm(log_salario~edad+edad_2, data = nuevos_datos)$coefficients
-b0<-coefs[1]
-b1<-coefs[2] 
-b2<-coefs[3] 
-
-maximizar <- function(edad) {b0 + b1*edad + b2*(edad^2)}
-maximo <- optimize(maximizar, interval = c(18,93), maximum=T)
-edad_maxima <- as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])
-
-mod2_fn <- function(data, index, 
-                    edad_maxima = as.numeric(optimize(maximizar, interval = c(18,93), maximum=T)[1])) {
-  
-  coefs <- lm(log_salario~edad+edad_2, data = nuevos_datos, subset = index)$coefficients
-  
-  b0<-coefs[1]
-  b1<-coefs[2] 
-  b2<-coefs[3]
-  
-  age_earnings <- b1 + 2*b2*(edad_maxima)
-  
-  return(age_earnings)
-}
-
-results <- boot(nuevos_datos, mod2_fn, R=1000)
-results
-
-
-##Otra idea 
+b2<-coefs[3]
 
 #Note que la edad máxima se encuentra con la siguiente fórmula:
 edad_optima <- -b1/(2*b2)
@@ -206,3 +74,39 @@ edad_optima <- -b1/(2*b2)
 
   results <- boot(nuevos_datos, peak_age,R=1000)
   results
+  
+  
+#Calculamos los Intervalos de Confianza con el E.E del Bootrstap
+  
+  IC_i <- b1 -1.96*(0.4991073) #Intervalo de confianza inferior
+  IC_i
+  IC_s <- b1 +1.96*(0.4991073) #intervalo de confianza superior 
+  IC_s
+  
+  x <- 44.76267
+  logw_max <- 
+  
+
+  #Intentando graficar los intervalos de confianza en la función predicha.
+  ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line(color = "blue") + theme_bw() + 
+    labs(x ="Edad (años)", y = "Logaritmo del salario (predicho)", 
+         title= "Gráfico 1. Perfil estimado para la relación edad-ganancias") +  
+    geom_errorbarh(aes(x=44.76267, xmax = b1 + IC , xmin = b1 - IC, y= 14))
+  
+  
+  geom_errorbarh(aes(x, ymin = ymin, ymax = ymax), width = .1)
+  
+  
+  #Estimador b1 como porcentaje de la media
+  y_promedio<- mean(nuevos_datos$log_salario, na.rm = T)
+  y_promedio
+  
+  b1_porcentaje_media <- (0.058/13.97346)*100
+  b1_porcentaje_media
+  
+  
+  mean(nuevos_datos$log_salario[nuevos_datos$edad == "44"], na.rm=TRUE)
+  
+  mean(df[df$points >= 90, 'assists'])
+  mean(nuevos_datos[nuevos_datos$edad ==edad_optima, 'log_salario'])
+  
