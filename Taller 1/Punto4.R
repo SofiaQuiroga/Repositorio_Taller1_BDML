@@ -57,7 +57,7 @@ p_load(officer)
 p_load(flextable)
 install.packages("huxtable")
 export_summs(reg1, reg2, scale = TRUE, to.file = "docx", file.name = "regresionesBDML1.docx")
-export_summs(reg3, scale = TRUE, to.file = "docx", file.name = "regresionesBDML1.docx")
+export_summs(reg2, reg3, scale = TRUE, to.file = "docx", file.name = "regresionesBDML1.docx")
 
 
 #Bootstrap con FWL
@@ -110,7 +110,56 @@ wp_modelo2_fn(datos,1:nrow(datos))
 
 results<- boot(datos, wp_modelo2_fn,R=1000)
 results
+##wage gap: -1.162451 
 ##error estándar  bootstrap:0.081073   FWL:0.8084172
+
+##BOOTSTRAP CON REGRESIÓN 2 (RESIDUOS)
+
+reg4<-lm(logwResidF~female+maxEducResidF+tiempoTrabajoResidF+estratoResidF+edadResidF+agesqResidF,datos)
+#guardamos los coeficientes en un vector
+coefsres<- reg4$coef
+coefsres
+#Coeficientes a escalares
+b0res<-coefs[1] #intercepto
+b1res<-coefs[2] #female
+b2res<-coefs[3] #maxEducativo
+b3res<-coefs[4] #tiempoTrabajo
+b4res<-coefs[5] #estrato
+b5res<-coefs[6] #edad
+b6res<-coefs[7] #edad al cuadrado
+
+#estimamos el wage gap condicional
+wage_bar<- mean(datos$logw)
+wage_gapr<- b1res*wage_bar
+wage_gapr
+wage_bar
+
+#La brecha salarial es igual
+
+#errores estándar
+wp_modelores_fn<-function(data,index,
+                        wage_bar=mean(datos$logw)){
+  
+  
+  coefsresd<-lm(logwResidF~female+maxEducResidF+tiempoTrabajoResidF+estratoResidF+edadResidF+agesqResidF,datos, subset=index)$coefficients
+  
+  
+  b1<-coefsresd[2] #coeficiente de la variable female
+  
+  wage_gapr<- b1*wage_bar
+  
+  
+  #return el gender wage gap condicionado
+  return(wage_gapr)
+}
+wp_modelores_fn(datos,1:nrow(datos))
+
+resultsres<- boot(datos, wp_modelores_fn,R=1000)
+resultsres
+
+#el resultado es igual con la descomposición de FWL, el error estándar es 0. 
+#error estándar O
+
 
 #Predicted age-wage profiles 
 
