@@ -51,6 +51,14 @@ r3<-lm(logw~female+maxEducativo + tiempoTrabajo +estrato + edad+ agesq, datos)
 stargazer(r2,r3,type="text",digits=7)
 #al omitir la variable "female" los coeficientes son diferentes
 
+#EXPORTAR RESULTADOS
+p_load(jtools)
+p_load(officer)
+p_load(flextable)
+install.packages("huxtable")
+export_summs(reg1, reg2, scale = TRUE, to.file = "docx", file.name = "regresionesBDML1.docx")
+export_summs(reg3, scale = TRUE, to.file = "docx", file.name = "regresionesBDML1.docx")
+
 
 #Bootstrap con FWL
 
