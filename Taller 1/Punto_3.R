@@ -7,15 +7,14 @@ p_load("boot")
 #Fijamos una semilla para el bootstrap 
 set.seed(123)
 
-###Genero las variables de la regresión ----------------------------
-
+#Genero las variables de la regresión ----------------------------
 
 datos<- datos %>% mutate(edad_2=edad^2, 
                          log_salario=log(salario) )
 
-###La regresión ----------------------------
+#La regresión ----------------------------
 
-###Necesito manejar los datos que no tengan "." ni "inf" o "-inf", pues genera problemas al correr laregresión-
+#Necesito manejar los datos que no tengan "." ni "inf" o "-inf",pues genera problemas al correr laregresión-
 
 nuevos_datos <- datos                               # Duplicate data
 nuevos_datos[is.na(nuevos_datos) | nuevos_datos == "Inf"] <- NA
@@ -31,14 +30,6 @@ stargazer(mod1,type="text")
 ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line(color = "blue") + theme_bw() + 
   labs(x ="Edad (años)", y = "Logaritmo del salario (predicho)", 
   title= "Gráfico 1. Perfil estimado para la relación edad-ganancias")
-
-
-#Estimacion en niveles 
-mod2<-lm(salario~edad+edad_2, data = nuevos_datos)
-salario_predicho <- predict(mod2, nuevos_datos)
-stargazer(mod2,type="text")
-ggplot(nuevos_datos, aes(x = edad, y=salario_predicho)) + geom_line(color = "blue") + theme_bw()
-  
 
 #Necesitamos los coeficientes
 mod1<-lm(log_salario~edad+edad_2, data = nuevos_datos)
@@ -68,6 +59,7 @@ edad_optima <- -b1/(2*b2)
     
     #calculamos la edad que maximiza el ingreso
     edad_optima <- -b1/(2*b2)
+    edad_optima
     
     return(edad_optima)
   }
@@ -83,30 +75,9 @@ edad_optima <- -b1/(2*b2)
   IC_s <- b1 +1.96*(0.4991073) #intervalo de confianza superior 
   IC_s
   
-  x <- 44.76267
-  logw_max <- 
-  
-
-  #Intentando graficar los intervalos de confianza en la función predicha.
-  ggplot(nuevos_datos, aes(x = edad, y=y_predict)) + geom_line(color = "blue") + theme_bw() + 
-    labs(x ="Edad (años)", y = "Logaritmo del salario (predicho)", 
-         title= "Gráfico 1. Perfil estimado para la relación edad-ganancias") +  
-    geom_errorbarh(aes(x=44.76267, xmax = b1 + IC , xmin = b1 - IC, y= 14))
-  
-  
-  geom_errorbarh(aes(x, ymin = ymin, ymax = ymax), width = .1)
-  
-  
   #Estimador b1 como porcentaje de la media
   y_promedio<- mean(nuevos_datos$log_salario, na.rm = T)
   y_promedio
   
   b1_porcentaje_media <- (0.058/13.97346)*100
-  b1_porcentaje_media
-  
-  
-  mean(nuevos_datos$log_salario[nuevos_datos$edad == "44"], na.rm=TRUE)
-  
-  mean(df[df$points >= 90, 'assists'])
-  mean(nuevos_datos[nuevos_datos$edad ==edad_optima, 'log_salario'])
   
