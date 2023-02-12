@@ -1,18 +1,38 @@
-# Problem Set Template Repository for Big Data and Machine Learning for Applied Economics
+##Taller 1 Big Data y Machine Learning. 
 
-This is the template repository for the problem sets.
+Este es el repositorio del taller 1 del curso Big Data y Machine Learning.
+El objetivo de este taller es analizar y predecir el salario de los colombianos 
+utilizando datos de la población.
 
-The repo should contain at least four folders:
+El taller está construido en el lenguaje de programación de R, el cual es un lenguaje para 
+análisis estadístico y grafico de libre acceso 
+"https://www.r-project.org/"
 
-- `document`: contains your final document in `pdf` format. Ideally, the document should pull figures and tables directly from the `views` folder. I've included a latex template I created for the Thesis Seminar. 
-- `scripts`: contains all your scripts
-- `stores`: contains all the data sets used. If files are "too big" for GitHub, include a document describing where people can access the data.
-- `views`: contains all figures and tables
+Para poder utilizar el software, se requiere la aplicación de Rstudio la cual facilita un entorno de 
+desarrollo para poder utilizar el lenguaje de programación.
+"https://www.r-studio.com/"
+
+La base de datos utilizada es la Gran Encuesta Integrada de Hogares (GEIH) de 2018. 
+La Base fue descargada del repositorio del profesor de la universidad de los andes Ignacio Sarmiento. 
+El cual divido la base en 10 grandes Chunks para facilitar su manejo. 
+"https://ignaciomsarmiento.github.io/GEIH2018_sample/"
+
+El repositorio cuenta con 4 partes:
+
+Documentos: El lugar donde esta el archivo .pdf del taller con todos los puntos del trabajo.
+
+Scripts: Donde estan las programaciones en Restudio de todos los puntos del trabajo.
+
+stores: Lugar donde esta la Base de datos completa de la GEIH.
+
+views: Contiene todas las garficas y tablas utilizadas en el trabajo. 
+
+ 
 
 
 
-## Some general reminders: 
 
-- It is essential how you write up the document. Be sure to be organized and consistent in explaining your equations and findings. Make sure that there are no compilation errors.
-- Write understandable code, separating and commenting on each section. Coding, like in writing, style is critical for readability. If the code is well written, it should be self-contained. There is no need to write everything you did. I encourage you to follow the [tidyverse style guide](https://style.tidyverse.org/)
+ 
+
+
 
