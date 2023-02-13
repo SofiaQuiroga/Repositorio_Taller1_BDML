@@ -220,7 +220,7 @@ base <- rbind(base_f, base_m)
 #Gráfico
 
 ggplot(base, aes(x=edad, y=salario_predicho, color=as.factor(female) ) ) + geom_line() + theme_bw() +labs(x ="Edad (años)", y = "Log Salario (predicho)", 
-                                                                                                          title= "Edad-salario por sexo sin interacción") 
+                                                                                                          title= "Edad-salario por sexo sin interacción",  color= "Sexo femenino") 
        
 #Modelo con interacción entre sexo y edad
 ##interacción entre ser de sexo femenino Y un cambio marginal en la edad
@@ -239,7 +239,7 @@ base1 <- rbind(base_f1, base_m1)
 #Gráfico
 
 ggplot(base1, aes(x=edad, y=salario_predicho, color=as.factor(female) ) ) + geom_line() + theme_bw() +labs(x ="Edad (años)", y = "Log Salario (predicho)", 
-                                                                                                          title= "Edad-salario por sexo con interacción") 
+                                                                                                          title= "Edad-salario por sexo con interacción", color= "Sexo femenino") 
 
 
 
